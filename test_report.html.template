@@ -97,7 +97,7 @@
         }
 
         .testResultGroup {
-            width: 120px;
+            width: 230px;
             height: 24px;
             text-align: center;
             background-color: #43c143;

@@ -434,8 +434,10 @@ func generateReport(tmplData *templateData, allTests map[string]*testStatus, tes
 		}
 
 		if tmplData.GroupByPackage {
-			tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: status.Package, GroupName: status.Group})
-			if len(tmplData.TestResults) != 0 && tmplData.TestResults[tgID].PackageName != status.Package {
+			if len(tmplData.TestResults) == 0 {
+				tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: status.Package, GroupName: status.Group})
+			} else if tmplData.TestResults[tgID].PackageName != status.Package {
+				tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: status.Package, GroupName: status.Group})
 				tgID++
 			}
 		} else if len(tmplData.TestResults) == tgID {
@@ -465,6 +467,12 @@ func generateReport(tmplData *templateData, allTests map[string]*testStatus, tes
 	td := time.Now()
 	tmplData.TestExecutionDate = fmt.Sprintf("%s %d, %d %02d:%02d:%02d",
 		td.Month(), td.Day(), td.Year(), td.Hour(), td.Minute(), td.Second())
+
+	// sort by group name
+	sort.SliceStable(tmplData.TestResults, func(i, j int) bool {
+		return tmplData.TestResults[i].GroupName < tmplData.TestResults[j].GroupName
+	})
+
 	if err := tpl.Execute(reportFileWriter, tmplData); err != nil {
 		return err
 	}
@@ -503,5 +511,5 @@ func getGroupName(status *testStatus) string {
 		file = fileParts[0]
 	}
 
-	return fmt.Sprintf("%s - %s", pakage, file)
+	return fmt.Sprintf("%s - %s", strings.Title(pakage), file)
 }
