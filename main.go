@@ -204,7 +204,7 @@ func initRootCommand() (*cobra.Command, *templateData, *cmdFlags) {
 		"g",
 		20,
 		"the number of tests per test group indicator")
-	rootCmd.PersistentFlags().BoolVarP(&flags.verbose,
+	rootCmd.PersistentFlags().BoolVarP(&flags.groupByPackage,
 		"groupByPackage",
 		"p",
 		true,
