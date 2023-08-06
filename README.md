@@ -10,7 +10,7 @@
 [![license: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://shields.io/)
 [![version: 0.10.0](https://img.shields.io/badge/version-0.9.3-default.svg)](https://shields.io/)
 [![platforms: macos,linux,windows](https://img.shields.io/badge/platforms-macos%20|%20linux%20|%20windows-orange.svg)](https://shields.io/)
-[![goreportcard](https://goreportcard.com/badge/github.com/vakenbolt/go-test-report)](https://goreportcard.com/report/github.com/vakenbolt/go-test-report)
+[![goreportcard](https://goreportcard.com/badge/github.com/jdsmdev/go-test-report)](https://goreportcard.com/report/github.com/jdsmdev/go-test-report)
 
 `go-test-report` captures `go test` output and parses it into a _single_ self-contained HTML file. 
 
@@ -181,10 +181,11 @@ $ gmake buildall
 [@afbjorklund](https://github.com/afbjorklund)
 [@quarckster](https://github.com/quarckster)
 [@vakenbolt](https://github.com/vakenbolt)
+[@jdsmdev](https://github.com/jdsmdev)
 
 
 ## Contribute & Support
 
 - Add a GitHub Star
-- Suggest [new features, ideas and optimizations](https://github.com/vakenbolt/go-test-report/issues)
-- [Report issues](https://github.com/vakenbolt/go-test-report/issues)
+- Suggest [new features, ideas and optimizations](https://github.com/jdsmdev/go-test-report/issues)
+- [Report issues](https://github.com/jdsmdev/go-test-report/issues)
