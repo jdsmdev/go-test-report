@@ -97,17 +97,19 @@
         }
 
         .testResultGroup {
-            width: {{.TestResultGroupIndicatorWidth}};
-            height: {{.TestResultGroupIndicatorHeight}};
+            width: 96px;
+            height: 24px;
+            text-align: center;
             background-color: #43c143;
-            margin-left: 1px;
-            margin-bottom: 1px;
+            margin-left: 6px;
+            margin-bottom: 6px;
+            padding-top: 1px;
             box-sizing: border-box;
         }
 
         .testResultGroup.selected {
-            border: 1px white solid;
-            background-color: black !important;
+            border: 1px lightgray solid;
+            background-color: #43c14369 !important;
         }
 
         .testResultGroup.skipped {
@@ -249,7 +251,7 @@
     <div class="cardContainer">
         <div id="testResults">
             {{range $k, $v := .TestResults}}
-                <div class="testResultGroup {{.FailureIndicator}} {{.SkippedIndicator}}" id="{{$k}}"></div>
+                <div class="testResultGroup {{.FailureIndicator}} {{.SkippedIndicator}}" id="{{$k}}">{{.PackageName}}</div>
             {{end}}
         </div>
     </div>

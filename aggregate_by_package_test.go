@@ -355,12 +355,10 @@ func TestAggregateByPackage(t *testing.T) {
 func TestAggregateByPackageReport(t *testing.T) {
 	assertions := assert.New(t)
 	tmplData := &templateData{
-		TestResultGroupIndicatorWidth:  "20px",
-		TestResultGroupIndicatorHeight: "16px",
-		ReportTitle:                    "test-title",
-		numOfTestsPerGroup:             2,
-		GroupByPackage:                 true,
-		OutputFilename:                 "test-output-report.html",
+		ReportTitle:        "test-title",
+		numOfTestsPerGroup: 2,
+		GroupByPackage:     true,
+		OutputFilename:     "test-output-report.html",
 	}
 	flags := &cmdFlags{}
 	data := reportData

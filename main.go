@@ -46,20 +46,18 @@ type (
 	}
 
 	templateData struct {
-		TestResultGroupIndicatorWidth  string
-		TestResultGroupIndicatorHeight string
-		TestResults                    []*testGroupData
-		NumOfTestPassed                int
-		NumOfTestFailed                int
-		NumOfTestSkipped               int
-		NumOfTests                     int
-		TestDuration                   time.Duration
-		ReportTitle                    string
-		JsCode                         template.JS
-		numOfTestsPerGroup             int
-		GroupByPackage                 bool
-		OutputFilename                 string
-		TestExecutionDate              string
+		TestResults        []*testGroupData
+		NumOfTestPassed    int
+		NumOfTestFailed    int
+		NumOfTestSkipped   int
+		NumOfTests         int
+		TestDuration       time.Duration
+		ReportTitle        string
+		JsCode             template.JS
+		numOfTestsPerGroup int
+		GroupByPackage     bool
+		OutputFilename     string
+		TestExecutionDate  string
 	}
 
 	testGroupData struct {
@@ -71,8 +69,6 @@ type (
 
 	cmdFlags struct {
 		titleFlag      string
-		sizeFlag       string
-		groupSize      int
 		listFlag       string
 		groupByPackage bool
 		outputFlag     string
@@ -123,10 +119,7 @@ func initRootCommand() (*cobra.Command, *templateData, *cmdFlags) {
 		Long: "Captures go test output via stdin and parses it into a single self-contained html file.",
 		RunE: func(cmd *cobra.Command, args []string) (e error) {
 			startTime := time.Now()
-			if err := parseSizeFlag(tmplData, flags); err != nil {
-				return err
-			}
-			tmplData.numOfTestsPerGroup = flags.groupSize
+
 			tmplData.GroupByPackage = flags.groupByPackage
 			tmplData.ReportTitle = flags.titleFlag
 			tmplData.OutputFilename = flags.outputFlag
@@ -194,16 +187,6 @@ func initRootCommand() (*cobra.Command, *templateData, *cmdFlags) {
 		"t",
 		"go-test-report",
 		"the title text shown in the test report")
-	rootCmd.PersistentFlags().StringVarP(&flags.sizeFlag,
-		"size",
-		"s",
-		"24",
-		"the size (in pixels) of the clickable indicator for test result groups")
-	rootCmd.PersistentFlags().IntVarP(&flags.groupSize,
-		"groupSize",
-		"g",
-		20,
-		"the number of tests per test group indicator")
 	rootCmd.PersistentFlags().BoolVarP(&flags.groupByPackage,
 		"groupByPackage",
 		"p",
@@ -481,34 +464,6 @@ func generateReport(tmplData *templateData, allTests map[string]*testStatus, tes
 	if err := tpl.Execute(reportFileWriter, tmplData); err != nil {
 		return err
 	}
-	return nil
-}
-
-func parseSizeFlag(tmplData *templateData, flags *cmdFlags) error {
-	flags.sizeFlag = strings.ToLower(flags.sizeFlag)
-	if !strings.Contains(flags.sizeFlag, "x") {
-		val, err := strconv.Atoi(flags.sizeFlag)
-		if err != nil {
-			return err
-		}
-		tmplData.TestResultGroupIndicatorWidth = fmt.Sprintf("%dpx", val)
-		tmplData.TestResultGroupIndicatorHeight = fmt.Sprintf("%dpx", val)
-		return nil
-	}
-	if strings.Count(flags.sizeFlag, "x") > 1 {
-		return errors.New(`malformed size value; only one x is allowed if specifying with and height`)
-	}
-	a := strings.Split(flags.sizeFlag, "x")
-	valW, err := strconv.Atoi(a[0])
-	if err != nil {
-		return err
-	}
-	tmplData.TestResultGroupIndicatorWidth = fmt.Sprintf("%dpx", valW)
-	valH, err := strconv.Atoi(a[1])
-	if err != nil {
-		return err
-	}
-	tmplData.TestResultGroupIndicatorHeight = fmt.Sprintf("%dpx", valH)
 	return nil
 }
 
