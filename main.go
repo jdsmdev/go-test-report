@@ -37,6 +37,7 @@ type (
 	testStatus struct {
 		TestName           string
 		Package            string
+		Group              string
 		ElapsedTime        float64
 		Output             []string
 		Passed             bool
@@ -62,6 +63,7 @@ type (
 
 	testGroupData struct {
 		PackageName      string
+		GroupName        string
 		FailureIndicator string
 		SkippedIndicator string
 		TestResults      []*testStatus
@@ -422,22 +424,24 @@ func generateReport(tmplData *templateData, allTests map[string]*testStatus, tes
 	sort.Sort(byName(tests))
 	for _, test := range tests {
 		status := allTests[test.key]
-		if tmplData.GroupByPackage {
-			if len(tmplData.TestResults) == 0 {
-				tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: allTests[test.key].Package})
-			} else if tmplData.TestResults[tgID].PackageName != allTests[test.key].Package {
-				tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: allTests[test.key].Package})
-				tgID++
-			}
-		} else if len(tmplData.TestResults) == tgID {
-			tmplData.TestResults = append(tmplData.TestResults, &testGroupData{})
-		}
+
 		// add file info(name and position; line and col) associated with the test function
 		testFileInfo := testFileDetailByPackage[status.Package][status.TestName]
 		if testFileInfo != nil {
 			status.TestFileName = testFileInfo.FileName
 			status.TestFunctionDetail = testFileInfo.TestFunctionFilePos
+			status.Group = getGroupName(status)
 		}
+
+		if tmplData.GroupByPackage {
+			tmplData.TestResults = append(tmplData.TestResults, &testGroupData{PackageName: status.Package, GroupName: status.Group})
+			if len(tmplData.TestResults) != 0 && tmplData.TestResults[tgID].PackageName != status.Package {
+				tgID++
+			}
+		} else if len(tmplData.TestResults) == tgID {
+			tmplData.TestResults = append(tmplData.TestResults, &testGroupData{GroupName: status.Group})
+		}
+
 		tmplData.TestResults[tgID].TestResults = append(tmplData.TestResults[tgID].TestResults, status)
 		if !status.Passed {
 			if !status.Skipped {
@@ -476,4 +480,28 @@ func checkIfStdinIsPiped() error {
 		return nil
 	}
 	return errors.New("ERROR: missing ≪ stdin ≫ pipe")
+}
+
+func getGroupName(status *testStatus) string {
+	var pakage, file string
+
+	packageParts := strings.Split(status.Package, "/")
+	fileParts := strings.Split(status.TestFileName, "_test")
+
+	packageLen := len(packageParts)
+	fileLen := len(fileParts)
+
+	if packageLen == 0 {
+		pakage = status.Package
+	} else {
+		pakage = packageParts[len(packageParts)-1]
+	}
+
+	if fileLen == 0 {
+		file = status.TestFileName
+	} else {
+		file = fileParts[0]
+	}
+
+	return fmt.Sprintf("%s - %s", pakage, file)
 }

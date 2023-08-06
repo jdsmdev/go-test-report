@@ -97,10 +97,11 @@
         }
 
         .testResultGroup {
-            width: 96px;
+            width: 120px;
             height: 24px;
             text-align: center;
             background-color: #43c143;
+            color: dimgray;
             margin-left: 6px;
             margin-bottom: 6px;
             padding-top: 1px;
@@ -251,7 +252,7 @@
     <div class="cardContainer">
         <div id="testResults">
             {{range $k, $v := .TestResults}}
-                <div class="testResultGroup {{.FailureIndicator}} {{.SkippedIndicator}}" id="{{$k}}">{{.PackageName}}</div>
+                <div class="testResultGroup {{.FailureIndicator}} {{.SkippedIndicator}}" id="{{$k}}">{{.GroupName}}</div>
             {{end}}
         </div>
     </div>
