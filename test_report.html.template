@@ -106,6 +106,7 @@
             margin-bottom: 6px;
             padding-top: 1px;
             box-sizing: border-box;
+            cursor: pointer;
         }
 
         .testResultGroup.selected {
