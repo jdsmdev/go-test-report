@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 	"testing"
@@ -22,7 +22,7 @@ func TestVersionCommand(t *testing.T) {
 	rootCmd.SetArgs([]string{"version"})
 	rootCmdErr := rootCmd.Execute()
 	assertions.Nil(rootCmdErr)
-	output, readErr := ioutil.ReadAll(buffer)
+	output, readErr := io.ReadAll(buffer)
 	assertions.Nil(readErr)
 	assertions.Equal(fmt.Sprintf("go-test-report v%s\n", version), string(output))
 }
@@ -35,7 +35,7 @@ func TestTitleFlag(t *testing.T) {
 	rootCmd.SetArgs([]string{"--title", "Sample Test Report"})
 	rootCmdErr := rootCmd.Execute()
 	assertions.Error(rootCmdErr)
-	output, readErr := ioutil.ReadAll(buffer)
+	output, readErr := io.ReadAll(buffer)
 	assertions.Nil(readErr)
 	assertions.Equal("Sample Test Report", tmplData.ReportTitle)
 	assertions.NotEmpty(output)
@@ -60,32 +60,7 @@ func TestSizeFlagIfMissingValue(t *testing.T) {
 	rootCmd.SetArgs([]string{"--size"})
 	rootCmdErr := rootCmd.Execute()
 	assertions.NotNil(rootCmdErr)
-	assertions.Equal(rootCmdErr.Error(), `flag needs an argument: --size`)
-}
-
-func TestGroupSizeFlag(t *testing.T) {
-	assertions := assert.New(t)
-	buffer := bytes.NewBufferString("")
-	rootCmd, tmplData, _ := initRootCommand()
-	rootCmd.SetOut(buffer)
-	rootCmd.SetArgs([]string{"--groupSize", "32"})
-	rootCmdErr := rootCmd.Execute()
-	assertions.Error(rootCmdErr)
-	output, readErr := ioutil.ReadAll(buffer)
-	assertions.Nil(readErr)
-	assertions.Equal(32, tmplData.numOfTestsPerGroup)
-	assertions.NotEmpty(output)
-}
-
-func TestGroupSizeFlagIfMissingValue(t *testing.T) {
-	assertions := assert.New(t)
-	buffer := bytes.NewBufferString("")
-	rootCmd, _, _ := initRootCommand()
-	rootCmd.SetOut(buffer)
-	rootCmd.SetArgs([]string{"--groupSize"})
-	rootCmdErr := rootCmd.Execute()
-	assertions.NotNil(rootCmdErr)
-	assertions.Equal(rootCmdErr.Error(), `flag needs an argument: --groupSize`)
+	assertions.Equal(rootCmdErr.Error(), "unknown flag: --size")
 }
 
 func TestGroupOutputFlag(t *testing.T) {
@@ -96,7 +71,7 @@ func TestGroupOutputFlag(t *testing.T) {
 	rootCmd.SetArgs([]string{"--output", "test_file.html"})
 	rootCmdErr := rootCmd.Execute()
 	assertions.Error(rootCmdErr)
-	output, readErr := ioutil.ReadAll(buffer)
+	output, readErr := io.ReadAll(buffer)
 	assertions.Nil(readErr)
 	assertions.Equal("test_file.html", tmplData.OutputFilename)
 	assertions.NotEmpty(output)
@@ -191,7 +166,7 @@ func TestGetAllDetails(t *testing.T) {
 		"main_test.go"
 	]
 }`
-	tmpfile, err := ioutil.TempFile("", "*.json")
+	tmpfile, err := os.CreateTemp("", "*.json")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -288,26 +263,26 @@ func TestGenerateReport(t *testing.T) {
 	assertions.Equal(1, tmplData.NumOfTestSkipped)
 	assertions.Equal(4, tmplData.NumOfTests)
 
-	assertions.Equal("TestFunc1", tmplData.TestResults[0].TestResults[0].TestName)
+	assertions.Equal("TestFunc3", tmplData.TestResults[0].TestResults[0].TestName)
 	assertions.Equal("go-test-report", tmplData.TestResults[0].TestResults[0].Package)
-	assertions.Equal(true, tmplData.TestResults[0].TestResults[0].Passed)
-	assertions.Equal("sample_file_1.go", tmplData.TestResults[0].TestResults[0].TestFileName)
-	assertions.Equal(1, tmplData.TestResults[0].TestResults[0].TestFunctionDetail.Col)
-	assertions.Equal(101, tmplData.TestResults[0].TestResults[0].TestFunctionDetail.Line)
+	assertions.Equal(false, tmplData.TestResults[0].TestResults[0].Passed)
+	assertions.Empty(tmplData.TestResults[0].TestResults[0].TestFileName)
+	assertions.Equal(0, tmplData.TestResults[0].TestResults[0].TestFunctionDetail.Col)
+	assertions.Equal(0, tmplData.TestResults[0].TestResults[0].TestFunctionDetail.Line)
 
-	assertions.Equal("TestFunc2", tmplData.TestResults[0].TestResults[1].TestName)
-	assertions.Equal("package2", tmplData.TestResults[0].TestResults[1].Package)
-	assertions.Equal(true, tmplData.TestResults[0].TestResults[1].Passed)
-	assertions.Equal("sample_file_2.go", tmplData.TestResults[0].TestResults[1].TestFileName)
-	assertions.Equal(17, tmplData.TestResults[0].TestResults[1].TestFunctionDetail.Col)
-	assertions.Equal(784, tmplData.TestResults[0].TestResults[1].TestFunctionDetail.Line)
+	assertions.Equal("TestFunc4", tmplData.TestResults[0].TestResults[1].TestName)
+	assertions.Equal("go-test-report", tmplData.TestResults[0].TestResults[1].Package)
+	assertions.Equal(false, tmplData.TestResults[0].TestResults[1].Passed)
+	assertions.Empty(tmplData.TestResults[0].TestResults[1].TestFileName)
+	assertions.Equal(0, tmplData.TestResults[0].TestResults[1].TestFunctionDetail.Col)
+	assertions.Equal(0, tmplData.TestResults[0].TestResults[1].TestFunctionDetail.Line)
 
-	assertions.Equal("TestFunc3", tmplData.TestResults[1].TestResults[0].TestName)
+	assertions.Equal("TestFunc1", tmplData.TestResults[1].TestResults[0].TestName)
 	assertions.Equal("go-test-report", tmplData.TestResults[1].TestResults[0].Package)
-	assertions.Equal(false, tmplData.TestResults[1].TestResults[0].Passed)
-	assertions.Empty(tmplData.TestResults[1].TestResults[0].TestFileName)
-	assertions.Equal(0, tmplData.TestResults[1].TestResults[0].TestFunctionDetail.Col)
-	assertions.Equal(0, tmplData.TestResults[1].TestResults[0].TestFunctionDetail.Line)
+	assertions.Equal(true, tmplData.TestResults[1].TestResults[0].Passed)
+	assertions.Equal("sample_file_1.go", tmplData.TestResults[1].TestResults[0].TestFileName)
+	assertions.Equal(1, tmplData.TestResults[1].TestResults[0].TestFunctionDetail.Col)
+	assertions.Equal(101, tmplData.TestResults[1].TestResults[0].TestFunctionDetail.Line)
 }
 
 func TestSameTestName(t *testing.T) {

@@ -193,7 +193,7 @@ func initRootCommand() (*cobra.Command, *templateData, *cmdFlags) {
 		"groupByPackage",
 		"p",
 		true,
-		"group test result by package, will ignore the groupSize flag")
+		"group test result by package")
 	rootCmd.PersistentFlags().StringVarP(&flags.listFlag,
 		"list",
 		"l",
@@ -269,9 +269,7 @@ func getAllDetails(listFile string) (testFileDetailsByPackage, error) {
 		return nil, err
 	}
 	defer f.Close()
-	if err != nil {
-		return nil, err
-	}
+
 	list := json.NewDecoder(f)
 	for list.More() {
 		goListJSON := goListJSON{}

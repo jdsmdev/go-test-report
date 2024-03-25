@@ -8,7 +8,7 @@
 
 
 [![license: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](https://shields.io/)
-[![version: 0.10.0](https://img.shields.io/badge/version-0.9.3-default.svg)](https://shields.io/)
+[![version: 1.1.0](https://img.shields.io/badge/version-1.1.0-default.svg)](https://shields.io/)
 [![platforms: macos,linux,windows](https://img.shields.io/badge/platforms-macos%20|%20linux%20|%20windows-orange.svg)](https://shields.io/)
 [![goreportcard](https://goreportcard.com/badge/github.com/jdsmdev/go-test-report)](https://goreportcard.com/report/github.com/jdsmdev/go-test-report)
 
@@ -61,7 +61,7 @@ A <span style="color: red">red</span> square indicates that at least one test in
 	<br/>	
 </p>
 
-To view the tests in a particular test group, click on any of the test group indicators. A selected group indicator will be colored in black. The number of tests allocated per test group can be set with the `groupSize` command-line flag.
+To view the tests in a particular test group, click on any of the test group indicators. A selected group indicator will be colored in black.
 
 <p align="center">
 	<br/>
@@ -91,7 +91,6 @@ Available Commands:
   version     Prints the version number of go-test-report
 
 Flags:
-  -g, --groupSize int   the number of tests per test group indicator (default 20)
   -h, --help            help for go-test-report
   -o, --output string   the HTML output file (default "test_report.html")
   -s, --size string     the size (in pixels) of the clickable indicator for test result groups (default "24")
@@ -113,15 +112,6 @@ To change the default title shown in the `test_report.html` file.
 ```bash
 $ go test -json | go-test-report -t "My Test Report"
 ```
-
-
-The default number of tests in a _test group_ can be changed using the `-g` or `--groupSize` flag. For example, the following command will change the default number of tests in a group to 8.
-
-```bash
-$ go test -json | go-test-report -g 8
-```
-
-
 
 Use the `-s` or `--size` flag to change the default size of the _group size indicator_. For example, the following command will set both the width and height of the size of the indicator to 48 pixels. 
 
